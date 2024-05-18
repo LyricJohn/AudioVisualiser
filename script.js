@@ -38,22 +38,18 @@ function playSongList() {
         }
 
         audio.load();
-        audio.addEventListener('canplaythrough', () => {
-            audio.play().then(() => {
-                audioName.innerText = songlist[currentSongIndex];
-                console.log(songlist[currentSongIndex])
-            }).catch(error => console.log("Error playing audio: ", error));
-        }, { once: true })
-    }
-
-    audio.src = `./audios/${songlist[currentSongIndex]}.mp3`;
-    audio.load();
-    audio.addEventListener('canplaythrough', () => {
         audio.play().then(() => {
             audioName.innerText = songlist[currentSongIndex];
             console.log(songlist[currentSongIndex])
         }).catch(error => console.log("Error playing audio: ", error));
-    }, { once: true })
+    }
+
+    audio.src = `./audios/${songlist[currentSongIndex]}.mp3`;
+    audio.load();
+    audio.play().then(() => {
+        audioName.innerText = songlist[currentSongIndex];
+        console.log(songlist[currentSongIndex]);
+    }).catch(error => console.log("Error playing audio: ", error));
 
     audio.addEventListener('ended', () => {
         playNextSong();
@@ -106,24 +102,21 @@ function startSymphony() {
                 aboutSection.style.opacity = "1";
                 aboutSection.style.display = "block";
 
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    analyser = audioContext.createAnalyser();
-                    
-                    source = audioContext.createMediaElementSource(audio);
-                    source.connect(analyser);
-                    analyser.connect(audioContext.destination);
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                
+                source = audioContext.createMediaElementSource(audio);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
 
-                    analyser.fftSize = 256;
-                    bufferLength = analyser.frequencyBinCount;
-                    dataArray = new Uint8Array(bufferLength);
-                }
+                
+                analyser.fftSize = 256;
+                bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
 
-                audioContext.resume().then(() => {
-                    playSongList();
-                    updateColor();
-                    renderFrame();
-                })
+                playSongList();
+                updateColor();
+                renderFrame();
             }, 2000)
         })
     })
